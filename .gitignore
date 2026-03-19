@@ -1,0 +1,11 @@
+# .gitignore
+# Ignore uploaded files
+uploads/
+assets/logo_sistem/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
+
+# Ignore local config (optional, but good practice if it contains sensitive data)
+# config/koneksi.php
