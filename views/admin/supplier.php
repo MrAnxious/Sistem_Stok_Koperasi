@@ -136,6 +136,9 @@ $query_supplier = mysqli_query($koneksi, "SELECT * FROM supplier ORDER BY nama_s
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="stok_barang.php">
                 <span class="material-symbols-outlined">inventory_2</span><span>Stok Barang</span>
             </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="kategori.php">
+                <span class="material-symbols-outlined">category</span><span>Kategori Barang</span>
+            </a>
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="barang_masuk.php">
                 <span class="material-symbols-outlined">input</span><span>Barang Masuk</span>
             </a>

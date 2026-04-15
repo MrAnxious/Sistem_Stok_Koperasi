@@ -17,6 +17,8 @@ if (!empty($search)) {
     $query = "SELECT * FROM stok ORDER BY id_barang DESC";
 }
 $result = mysqli_query($koneksi, $query);
+// Ambil daftar kategori untuk dropdown
+$kategori_list = mysqli_query($koneksi, "SELECT * FROM kategori ORDER BY nama_kategori ASC");
 ?>
 <!DOCTYPE html>
 <html class="light" lang="id">
@@ -81,6 +83,9 @@ $result = mysqli_query($koneksi, $query);
                 <div class="absolute left-0 w-1 h-6 bg-primary rounded-r-full"></div>
                 <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">inventory_2</span><span>Stok Barang</span>
             </a>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="kategori.php">
+                <span class="material-symbols-outlined">category</span><span>Kategori Barang</span>
+            </a>
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="barang_masuk.php">
                 <span class="material-symbols-outlined">input</span><span>Barang Masuk</span>
             </a>
@@ -93,12 +98,11 @@ $result = mysqli_query($koneksi, $query);
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="supplier.php">
                 <span class="material-symbols-outlined">local_shipping</span><span>Supplier</span>
             </a>
-                    <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="log_aktivitas.php">
+            <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="log_aktivitas.php">
                 <span class="material-symbols-outlined">manage_search</span><span>Log Aktivitas</span>
             </a>
             <a class="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition-colors" href="pengaturan.php">
-                
-                <span class="material-symbols-outlined" style="">settings</span>
+                <span class="material-symbols-outlined">settings</span>
                 <span>Pengaturan Sistem</span>
             </a>
 </nav>
@@ -257,7 +261,17 @@ $result = mysqli_query($koneksi, $query);
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                        <input type="text" name="kategori" required placeholder="Contoh: Sembako, Alat Tulis" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                        <select name="kategori" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            <option value="" disabled selected>-- Pilih Kategori --</option>
+                            <?php
+                            // Reset pointer kategori_list
+                            mysqli_data_seek($kategori_list, 0);
+                            while($kat = mysqli_fetch_assoc($kategori_list)):
+                            ?>
+                            <option value="<?= htmlspecialchars($kat['nama_kategori']) ?>"><?= htmlspecialchars($kat['nama_kategori']) ?></option>
+                            <?php endwhile; ?>
+                        </select>
+                        <p class="text-xs text-gray-400 mt-1">Belum ada kategori? <a href="kategori.php" class="text-primary underline hover:text-red-800">Tambahkan dulu di sini</a>.</p>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Upload Foto Barang</label>
@@ -289,7 +303,16 @@ $result = mysqli_query($koneksi, $query);
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                        <input type="text" name="kategori" x-model="editData.kategori" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                        <select id="edit-kategori-select" name="kategori" required class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all">
+                            <option value="" disabled>-- Pilih Kategori --</option>
+                            <?php
+                            mysqli_data_seek($kategori_list, 0);
+                            while($kat = mysqli_fetch_assoc($kategori_list)):
+                                $kat_nama = htmlspecialchars($kat['nama_kategori']);
+                            ?>
+                            <option value="<?= $kat_nama ?>" <?php // selected via JS below ?>><?= $kat_nama ?></option>
+                            <?php endwhile; ?>
+                        </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Ganti Foto (Opsional)</label>
@@ -303,6 +326,22 @@ $result = mysqli_query($koneksi, $query);
             </form>
         </div>
     </div>
+
+<script>
+// Auto-set dropdown kategori saat modal edit dibuka
+document.addEventListener('alpine:initialized', function() {
+    var selectEl = document.getElementById('edit-kategori-select');
+    if (!selectEl) return;
+    var rootEl = document.querySelector('[x-data]');
+    if (!rootEl) return;
+    Alpine.effect(function() {
+        var editData = Alpine.$data(rootEl).editData;
+        if (editData && editData.kategori) {
+            selectEl.value = editData.kategori;
+        }
+    });
+});
+</script>
 
 </body>
 </html>
